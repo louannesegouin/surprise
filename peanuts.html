@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cœur Battant & Écureuil</title>
+    <style>
+        :root {
+            --heart-color: #ff4d6d;
+            --bg-color: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* Animation du cœur battant */
+        .heart {
+            width: 150px;
+            height: 150px;
+            fill: var(--heart-color);
+            filter: drop-shadow(0 10px 20px rgba(255, 77, 109, 0.3));
+            animation: beat 0.8s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        @keyframes beat {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        /* Style de l'écureuil (caché au début) */
+        .squirrel-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .squirrel {
+            font-size: 100px;
+            display: block;
+        }
+
+        .peanut {
+            font-size: 40px;
+            position: absolute;
+            bottom: 10px;
+            right: -10px;
+            transform: rotate(-15deg);
+        }
+
+        /* État quand on clique */
+        .active .heart {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .active .squirrel-container {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        /* Message bonus */
+        .message {
+            position: absolute;
+            bottom: -60px;
+            width: 100%;
+            font-weight: 600;
+            color: #555;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+        }
+
+        .active .message {
+            opacity: 1;
+        }
+
+        /* Particules */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainContainer">
+        <!-- SVG du Coeur -->
+        <svg class="heart" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+
+        <!-- Conteneur Écureuil -->
+        <div class="squirrel-container">
+            <span class="squirrel">🐿️</span>
+            <span class="peanut">🥜</span>
+        </div>
+
+        <div class="message">Coucou Paul !</div>
+    </div>
+
+    <script>
+        const container = document.getElementById('mainContainer');
+        
+        container.addEventListener('click', () => {
+            if (!container.classList.contains('active')) {
+                container.classList.add('active');
+                createParticles();
+                
+                // Optionnel : On peut recliquer après 3 secondes pour recommencer
+                setTimeout(() => {
+                    container.style.cursor = "pointer";
+                }, 1000);
+            } else {
+                container.classList.remove('active');
+            }
+        });
+
+        // Fonction pour créer des petites particules de cœurs au clic
+        function createParticles() {
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.innerHTML = '❤️';
+                particle.className = 'particle';
+                particle.style.left = '50%';
+                particle.style.top = '50%';
+                particle.style.fontSize = Math.random() * (20 - 10) + 10 + 'px';
+                
+                const destinationX = (Math.random() - 0.5) * 300;
+                const destinationY = (Math.random() - 0.5) * 300;
+                const rotation = Math.random() * 360;
+
+                document.body.appendChild(particle);
+
+                const animation = particle.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${destinationX}px), calc(-50% + ${destinationY}px)) scale(0) rotate(${rotation}deg)`, opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 500,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
+                });
+
+                animation.onfinish = () => particle.remove();
+            }
+        }
+    </script>
+</body>
+</html>
