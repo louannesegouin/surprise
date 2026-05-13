@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cœur Battant & Écureuil</title>
+    <title>Surprise ! 🐿️</title>
     <style>
         :root {
             --heart-color: #ff4d6d;
             --bg-color: #ffffff;
+            --text-color: #888888;
         }
 
         body {
@@ -18,7 +19,7 @@
             align-items: center;
             height: 100vh;
             background-color: var(--bg-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
         }
 
@@ -26,6 +27,9 @@
             position: relative;
             cursor: pointer;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* Animation du cœur battant */
@@ -35,12 +39,29 @@
             fill: var(--heart-color);
             filter: drop-shadow(0 10px 20px rgba(255, 77, 109, 0.3));
             animation: beat 0.8s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transition: transform 0.5s ease, opacity 0.5s ease;
+            transition: transform 0.4s ease, opacity 0.4s ease;
         }
 
         @keyframes beat {
             from { transform: scale(1); }
-            to { transform: scale(1.15); }
+            to { transform: scale(1.1); }
+        }
+
+        /* Texte "Appuie dessus" */
+        .instruction {
+            margin-top: 20px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: fadeMove 1.6s infinite ease-in-out;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes fadeMove {
+            0%, 100% { opacity: 0.5; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(5px); }
         }
 
         /* Style de l'écureuil (caché au début) */
@@ -52,11 +73,12 @@
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0;
             pointer-events: none;
+            white-space: nowrap;
         }
 
         .squirrel {
             font-size: 100px;
-            display: block;
+            display: inline-block;
         }
 
         .peanut {
@@ -67,10 +89,11 @@
             transform: rotate(-15deg);
         }
 
-        /* État quand on clique */
-        .active .heart {
+        /* État quand on clique (Active) */
+        .active .heart, .active .instruction {
             opacity: 0;
             transform: scale(0);
+            pointer-events: none;
         }
 
         .active .squirrel-container {
@@ -78,15 +101,16 @@
             transform: translate(-50%, -50%) scale(1.5);
         }
 
-        /* Message bonus */
+        /* Message final */
         .message {
             position: absolute;
-            bottom: -60px;
-            width: 100%;
+            bottom: -80px;
+            width: 250px;
             font-weight: 600;
-            color: #555;
+            color: #444;
             opacity: 0;
-            transition: opacity 0.5s ease 0.3s;
+            transition: opacity 0.5s ease 0.4s;
+            font-size: 1.2rem;
         }
 
         .active .message {
@@ -97,7 +121,7 @@
         .particle {
             position: absolute;
             pointer-events: none;
-            opacity: 0;
+            z-index: 10;
         }
     </style>
 </head>
@@ -109,13 +133,16 @@
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
 
+        <!-- Texte d'instruction -->
+        <div class="instruction">Appuie dessus</div>
+
         <!-- Conteneur Écureuil -->
         <div class="squirrel-container">
             <span class="squirrel">🐿️</span>
             <span class="peanut">🥜</span>
         </div>
 
-        <div class="message">Coucou Paul !</div>
+        <div class="message">Coucou Peanuts !</div>
     </div>
 
     <script>
@@ -125,19 +152,14 @@
             if (!container.classList.contains('active')) {
                 container.classList.add('active');
                 createParticles();
-                
-                // Optionnel : On peut recliquer après 3 secondes pour recommencer
-                setTimeout(() => {
-                    container.style.cursor = "pointer";
-                }, 1000);
             } else {
+                // Permet de revenir à l'état initial si on reclique
                 container.classList.remove('active');
             }
         });
 
-        // Fonction pour créer des petites particules de cœurs au clic
         function createParticles() {
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 12; i++) {
                 const particle = document.createElement('div');
                 particle.innerHTML = '❤️';
                 particle.className = 'particle';
@@ -145,8 +167,8 @@
                 particle.style.top = '50%';
                 particle.style.fontSize = Math.random() * (20 - 10) + 10 + 'px';
                 
-                const destinationX = (Math.random() - 0.5) * 300;
-                const destinationY = (Math.random() - 0.5) * 300;
+                const destinationX = (Math.random() - 0.5) * 400;
+                const destinationY = (Math.random() - 0.5) * 400;
                 const rotation = Math.random() * 360;
 
                 document.body.appendChild(particle);
@@ -155,7 +177,7 @@
                     { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
                     { transform: `translate(calc(-50% + ${destinationX}px), calc(-50% + ${destinationY}px)) scale(0) rotate(${rotation}deg)`, opacity: 0 }
                 ], {
-                    duration: 1000 + Math.random() * 500,
+                    duration: 800 + Math.random() * 400,
                     easing: 'cubic-bezier(0, .9, .57, 1)'
                 });
 
