@@ -9,6 +9,7 @@
             --heart-color: #ff4d6d;
             --bg-color: #ffffff;
             --text-color: #888888;
+            --final-text-color: #444444;
         }
 
         body {
@@ -19,7 +20,7 @@
             align-items: center;
             height: 100vh;
             background-color: var(--bg-color);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             overflow: hidden;
         }
 
@@ -30,16 +31,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 300px;
+            height: 300px;
+            justify-content: center;
         }
 
         /* Animation du cœur battant */
         .heart {
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             fill: var(--heart-color);
-            filter: drop-shadow(0 10px 20px rgba(255, 77, 109, 0.3));
+            filter: drop-shadow(0 10px 15px rgba(255, 77, 109, 0.3));
             animation: beat 0.8s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transition: transform 0.4s ease, opacity 0.4s ease;
+            transition: all 0.4s ease;
         }
 
         @keyframes beat {
@@ -47,40 +51,58 @@
             to { transform: scale(1.1); }
         }
 
-        /* Texte "Appuie dessus" */
-        .instruction {
-            margin-top: 20px;
-            color: var(--text-color);
-            font-size: 1.1rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            animation: fadeMove 1.6s infinite ease-in-out;
-            transition: opacity 0.3s ease;
-        }
-
-        @keyframes fadeMove {
-            0%, 100% { opacity: 0.5; transform: translateY(0); }
-            50% { opacity: 1; transform: translateY(5px); }
-        }
-
-        /* Style de l'écureuil (caché au début) */
-        .squirrel-container {
+        /* Conteneur pour les messages (superposés) */
+        .text-zone {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0;
-            pointer-events: none;
+            bottom: 20px;
+            width: 100%;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .instruction, .message {
+            position: absolute;
+            transition: all 0.4s ease;
             white-space: nowrap;
         }
 
-        .squirrel {
-            font-size: 100px;
-            display: inline-block;
+        /* Texte initial "Appuie dessus" */
+        .instruction {
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 1;
+            animation: float 2s infinite ease-in-out;
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+
+        /* Message final "Miam..." */
+        .message {
+            color: var(--final-text-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        /* L'écureuil caché */
+        .squirrel-container {
+            position: absolute;
+            transform: scale(0);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .squirrel { font-size: 100px; }
         .peanut {
             font-size: 40px;
             position: absolute;
@@ -89,32 +111,25 @@
             transform: rotate(-15deg);
         }
 
-        /* État quand on clique (Active) */
-        .active .heart, .active .instruction {
+        /* ETAT ACTIF (quand on a cliqué) */
+        .active .heart {
             opacity: 0;
             transform: scale(0);
-            pointer-events: none;
         }
 
-        .active .squirrel-container {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.5);
-        }
-
-        /* Message final */
-        .message {
-            position: absolute;
-            bottom: -80px;
-            width: 250px;
-            font-weight: 600;
-            color: #444;
+        .active .instruction {
             opacity: 0;
-            transition: opacity 0.5s ease 0.4s;
-            font-size: 1.2rem;
+            transform: translateY(-10px);
         }
 
         .active .message {
             opacity: 1;
+            transform: translateY(0);
+        }
+
+        .active .squirrel-container {
+            opacity: 1;
+            transform: scale(1.5);
         }
 
         /* Particules */
@@ -133,16 +148,17 @@
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
 
-        <!-- Texte d'instruction -->
-        <div class="instruction">Appuie dessus</div>
-
-        <!-- Conteneur Écureuil -->
+        <!-- L'écureuil -->
         <div class="squirrel-container">
             <span class="squirrel">🐿️</span>
             <span class="peanut">🥜</span>
         </div>
 
-        <div class="message">Coucou Peanuts !</div>
+        <!-- Zone de texte unique -->
+        <div class="text-zone">
+            <div class="instruction">Appuie dessus</div>
+            <div class="message">Coucou mini peanuts !</div>
+        </div>
     </div>
 
     <script>
@@ -153,13 +169,12 @@
                 container.classList.add('active');
                 createParticles();
             } else {
-                // Permet de revenir à l'état initial si on reclique
                 container.classList.remove('active');
             }
         });
 
         function createParticles() {
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 15; i++) {
                 const particle = document.createElement('div');
                 particle.innerHTML = '❤️';
                 particle.className = 'particle';
@@ -169,19 +184,16 @@
                 
                 const destinationX = (Math.random() - 0.5) * 400;
                 const destinationY = (Math.random() - 0.5) * 400;
-                const rotation = Math.random() * 360;
 
                 document.body.appendChild(particle);
 
-                const animation = particle.animate([
+                particle.animate([
                     { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-                    { transform: `translate(calc(-50% + ${destinationX}px), calc(-50% + ${destinationY}px)) scale(0) rotate(${rotation}deg)`, opacity: 0 }
+                    { transform: `translate(calc(-50% + ${destinationX}px), calc(-50% + ${destinationY}px)) scale(0)`, opacity: 0 }
                 ], {
-                    duration: 800 + Math.random() * 400,
+                    duration: 1000,
                     easing: 'cubic-bezier(0, .9, .57, 1)'
-                });
-
-                animation.onfinish = () => particle.remove();
+                }).onfinish = () => particle.remove();
             }
         }
     </script>
